@@ -11,3 +11,15 @@ ffmpeg -f lavfi -i testsrc -f lavfi -i testsrc -f lavfi -i testsrc -f lavfi -i t
  [a][b]overlay=w[x]; \
  [x][c]overlay=0:h[y]; \
  [y][d]overlay=w:h[out]" -map "[out]" -c:v ffv1 -t 5 multiple_input_grid.avi
+
+ffmpeg -loop 1 -t 5 -i 0.png -loop 1 -t 5 -i 1.png -loop 1 -t 5 -i 2.png \
+-loop 1 -t 5 -i 3.png -loop 1 -t 5 -i 4.png \
+-filter_complex "[0:v]fade=t=out:st=4:d=1[v0];\
+[1:v]fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v1];\
+[2:v]fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v2];\
+[3:v]fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v3];\
+[4:v]fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v4];\
+[v0][v1][v2][v3][v4]concat=n=5:v=1:a=0,format=yuv420p[v]" -map "[v]" transition2.mp4
+
+
+ffmpeg  -y -t 5 -i water.mp4 -i asl_logo.png -filter_complex "[1:v]scale=w=100:h=-1[logo]; [v:0][logo]overlay=x=200:y=200" output.mp4 
