@@ -1,3 +1,13 @@
 ffmpeg -i input -filter_complex "drawtext=text='Summer Video':enable='between(t,15,20)',fade=t=in:start_time=15:d=0.5:alpha=1,fade=t=out:start_time=19.5:d=0.5:alpha=1[fg];[0][fg]overlay=format=auto,format=yuv420p" -c:a copy output.mp4
 
 https://ffmpeg.org/ffmpeg-filters.html#Filtering-Introduction
+
+
+ffmpeg -f lavfi -i testsrc -f lavfi -i testsrc -f lavfi -i testsrc -f lavfi -i testsrc -filter_complex \
+"[0:v]pad=iw*2:ih*2[a]; \
+ [1:v]negate[b]; \
+ [2:v]hflip[c]; \
+ [3:v]edgedetect[d]; \
+ [a][b]overlay=w[x]; \
+ [x][c]overlay=0:h[y]; \
+ [y][d]overlay=w:h[out]" -map "[out]" -c:v ffv1 -t 5 multiple_input_grid.avi
