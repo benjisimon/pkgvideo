@@ -23,7 +23,7 @@ main_caption_x=20
 main_caption_y="(h-text_h)-40"
 main_caption_font_size=48
 main_caption_font=Lato-Heavy.ttf
-main_caption_color=0x8a2be2
+main_caption_color=0x222222
 main_caption_start=0
 main_caption_end=5
 
