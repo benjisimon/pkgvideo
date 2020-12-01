@@ -14,10 +14,13 @@ ffmpeg=ffmpeg
 ffprobe=ffprobe
 
 logo=logo.png
+output=output.mp4
 
 main_video=input.mp4
 main_image_x="main_w-overlay_w-20"
 main_image_y="(main_h-overlay_h-40)"
+main_image_w=500
+main_image_h=-1
 main_caption_text="Thanks for watching"
 main_caption_x=20
 main_caption_y="(h-text_h)-40"
@@ -28,6 +31,8 @@ main_caption_start=0
 main_caption_end=5
 
 pre_duration=3
+pre_image_w=500
+pre_image_h=-1
 pre_image_x="(main_w-overlay_w)/2"
 pre_image_y="(main_h-overlay_h)*.80"
 pre_bg_color=0x666666
@@ -80,7 +85,9 @@ $ffmpeg -y  \
   -f lavfi -i color=color=$pre_bg_color:${main_video_width}x${main_video_height}:d=$pre_duration \
   -f lavfi -i color=color=$post_bg_color:${main_video_width}x${main_video_height}:d=$post_duration \
   -filter_complex "\
-    [1:v] scale=w=500:h=-1, split [logo_a][logo_b] ; \
+    [1:v] split [logo_a][logo_b] ; \
+    [logo_a]scale=w=$main_image_w:h=$main_image_h[logo_a] ; \
+    [logo_b]scale=w=$pre_image_w:h=$pre_image_h[logo_b] ; \
     [0:v][logo_a] overlay=${main_image_x}:${main_image_y} [main] ; \
     \
     [main]drawtext=fontfile=$font_dir/$main_caption_font: \
@@ -108,4 +115,4 @@ $ffmpeg -y  \
     [pre][main][post]concat=n=3 \
   " \
   -vsync 2 \
-  output.mp4
+  $output
