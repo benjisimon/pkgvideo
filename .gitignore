@@ -2,3 +2,6 @@
 *.png
 *.mov
 ffmpeg
+*~
+*.log
+\#*\#
