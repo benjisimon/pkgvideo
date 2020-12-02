@@ -22,8 +22,10 @@ main_image_y="(main_h-overlay_h-40)"
 main_image_w=500
 main_image_h=-1
 main_caption_text="Thanks for watching"
-main_caption_x=20
-main_caption_y="(h-text_h)-40"
+main_caption_bg_color=0xffffff@0.8
+main_caption_padding=24
+main_caption_x=32
+main_caption_y="(h-text_h)-40-12"
 main_caption_font_size=48
 main_caption_font=Lato-Heavy.ttf
 main_caption_color=0x222222
@@ -51,6 +53,10 @@ post_title_font_size=65
 post_title_x="(w-text_w)/2"
 post_title_y="(h-text_h)/2"
 post_title_color=0x222222
+post_image_w=500
+post_image_h=-1
+post_image_x="(main_w-overlay_w)/2"
+post_image_y="(main_h-overlay_h)*.80"
 
 config=$HOME/.pkgvid.last
 cp /dev/null $config
@@ -82,12 +88,14 @@ fi
 $ffmpeg -y  \
  -i $main_video \
   -i $logo  \
+  -i $logo  \
+  -i $logo  \
   -f lavfi -i color=color=$pre_bg_color:${main_video_width}x${main_video_height}:d=$pre_duration \
   -f lavfi -i color=color=$post_bg_color:${main_video_width}x${main_video_height}:d=$post_duration \
   -filter_complex "\
-    [1:v] split [logo_a][logo_b] ; \
-    [logo_a]scale=w=$main_image_w:h=$main_image_h[logo_a] ; \
-    [logo_b]scale=w=$pre_image_w:h=$pre_image_h[logo_b] ; \
+    [1:v]scale=w=$main_image_w:h=$main_image_h[logo_a] ; \
+    [2:v]scale=w=$pre_image_w:h=$pre_image_h[logo_b] ; \
+    [3:v]scale=w=$post_image_w:h=$post_image_h[logo_c] ; \
     [0:v][logo_a] overlay=${main_image_x}:${main_image_y} [main] ; \
     \
     [main]drawtext=fontfile=$font_dir/$main_caption_font: \
@@ -95,10 +103,11 @@ $ffmpeg -y  \
           x=$main_caption_x: y=$main_caption_y: \
           fontsize=$main_caption_font_size: \
           fontcolor=$main_caption_color: \
-          shadowcolor=black@.8: shadowx=4: shadowy=4: \
+          box=1: boxcolor=$main_caption_bg_color : line_spacing=0: \
+          bordercolor=$main_caption_bg_color: borderw=0: boxborderw=$main_caption_padding: \
           enable='between(t,$main_caption_start,$main_caption_end)'[main]; \
     \
-    [2:v]drawtext=fontfile=$font_dir/$pre_title_font: \
+    [4:v]drawtext=fontfile=$font_dir/$pre_title_font: \
          text='$pre_title_text': \
          x='$pre_title_x': y='$pre_title_y': \
          fontsize=$pre_title_font_size: \
@@ -106,11 +115,12 @@ $ffmpeg -y  \
     \
     [pre][logo_b] overlay=x='$pre_image_x':y='$pre_image_y' [pre] ; \
     \
-    [3:v]drawtext=fontfile=$font_dir/$post_title_font: \
+    [5:v]drawtext=fontfile=$font_dir/$post_title_font: \
          text='$post_title_text':\
          x='$post_title_x': y='$post_title_y': \
         fontsize=$post_title_font_size: \
         fontcolor=$post_title_color [post]; \
+    [post][logo_c] overlay=x='$post_image_x':y='$post_image_y' [post] ; \
    \
     [pre][main][post]concat=n=3 \
   " \
