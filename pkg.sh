@@ -45,6 +45,13 @@ pre_title_y="(h-text_h)/2"
 pre_title_font_size=48
 pre_title_color=white
 
+pre_subtitle_text=""
+pre_subtitle_font='Lato-Heavy.ttf'
+pre_subtitle_x="(w-text_w)/2"
+pre_subtitle_y="(h-text_h)/2"
+pre_subtitle_font_size=48
+pre_subtitle_color=white
+
 post_duration=5
 post_bg_color=0xE4E4E4
 post_title_text="Thanks for watching"
@@ -97,6 +104,7 @@ $ffmpeg -y  \
     [2:v]scale=w=$pre_image_w:h=$pre_image_h[logo_b] ; \
     [3:v]scale=w=$post_image_w:h=$post_image_h[logo_c] ; \
     [0:v][logo_a] overlay=${main_image_x}:${main_image_y} [main] ; \
+    [0:a] adelay=delays=${pre_duration}000:all=1  ; \
     \
     [main]drawtext=fontfile=$font_dir/$main_caption_font: \
           text='$main_caption_text': \
@@ -112,6 +120,11 @@ $ffmpeg -y  \
          x='$pre_title_x': y='$pre_title_y': \
          fontsize=$pre_title_font_size: \
          fontcolor=$pre_title_color [pre]; \
+    [pre]drawtext=fontfile=$font_dir/$pre_subtitle_font: \
+         text='$pre_subtitle_text': \
+         x='$pre_subtitle_x': y='$pre_subtitle_y': \
+         fontsize=$pre_subtitle_font_size: \
+         fontcolor=$pre_subtitle_color [pre]; \
     \
     [pre][logo_b] overlay=x='$pre_image_x':y='$pre_image_y' [pre] ; \
     \
