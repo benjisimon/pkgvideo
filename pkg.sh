@@ -9,6 +9,7 @@
 base_dir=$(dirname $0)
 font_dir=$base_dir/fonts
 debug=off
+crf=30
 
 ffmpeg=ffmpeg
 ffprobe=ffprobe
@@ -93,12 +94,13 @@ if [ "$debug" = "on" ]  ; then
 fi
 
 $ffmpeg -y  \
- -i $main_video \
+   -i $main_video \
   -i $logo  \
   -i $logo  \
   -i $logo  \
   -f lavfi -i color=color=$pre_bg_color:${main_video_width}x${main_video_height}:d=$pre_duration \
   -f lavfi -i color=color=$post_bg_color:${main_video_width}x${main_video_height}:d=$post_duration \
+  -codec:v libx264 -crf $crf -preset medium \
   -filter_complex "\
     [1:v]scale=w=$main_image_w:h=$main_image_h[logo_a] ; \
     [2:v]scale=w=$pre_image_w:h=$pre_image_h[logo_b] ; \
