@@ -52,7 +52,7 @@ if(-not $Source -Or (-not $(Test-Path $Source))) {
   $Source = Prompt-File -Title  "Choose Video" -Filter 'MP4 (*.mp4)|*.mp4|QuickTime (*.mov)|*.mov|AVI (*.avi)|*.avi'
 }
 
-if(-not $Source -Or (-not $(Test-Path $Config))) {
+if(-not $Config -Or (-not $(Test-Path $Config))) {
   $Config = Prompt-File -Title  "Choose Settings File" -Filter 'INI File (*.ini)|*.ini|Text File (*.txt)|*.txt'
 }
 
