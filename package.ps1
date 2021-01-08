@@ -70,3 +70,4 @@ $settings = @{}
 $settings = Parse-IniFile -File $PSScriptRoot\defaults.ini -Init $settings
 $settings = Parse-IniFile -File $Config -Init $settings
 
+[System.Windows.MessageBox]::Show("Now I'd process $Source")
