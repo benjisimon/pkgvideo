@@ -6,6 +6,8 @@ param($Source, $Config)
 Add-Type -AssemblyName PresentationCore,PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
+$Bin = "$PSScriptRoot\bin"
+
 function Prompt-File {
   param($Title, $Filter)
   
@@ -48,6 +50,14 @@ Function Parse-IniFile {
   $ini
 }
 
+Function Find-Dimen {
+  param($file,$what);
+
+  Invoke-Expression "$Bin\ffprobe -show_streams $Source" 2> $null | Select-String -Pattern "^$what=" | ForEach-Object {
+    $_ -replace "$what=", ""
+  }
+}
+
 if(-not $Source -Or (-not $(Test-Path $Source))) {
   $Source = Prompt-File -Title  "Choose Video" -Filter 'MP4 (*.mp4)|*.mp4|QuickTime (*.mov)|*.mov|AVI (*.avi)|*.avi'
 }
@@ -70,4 +80,9 @@ $settings = @{}
 $settings = Parse-IniFile -File $PSScriptRoot\defaults.ini -Init $settings
 $settings = Parse-IniFile -File $Config -Init $settings
 
-[System.Windows.MessageBox]::Show("Now I'd process $Source")
+
+$width = Find-Dimen -File $Source -What width
+$height = Find-Dimen -File $Source -What height
+
+echo "$width x $height"
+
