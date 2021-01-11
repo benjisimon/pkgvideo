@@ -31,6 +31,7 @@ $settings = Parse-IniFile -File $Config -Init $settings
 
 $settings['main'].video_width  = Find-Dimen -File $Source -What width
 $settings['main'].video_height = Find-Dimen -File $Source -What height
+$settings['pre'].duration      = Find-Duration -File $settings['pre'].audio
 
 if(-not $SkipFcsGeneration) {
   Generate-FilterComplexScript -Settings $settings
@@ -39,4 +40,12 @@ if(-not $SkipFcsGeneration) {
 Package-Video -Source $Source -Settings $settings
 
 $OutputFile = Get-OutputFile -File $Source
-& "$Bin\ffplay" $OutputFile
+
+if($env:UserName -eq "benji") {
+  & "$Bin\ffplay" $OutputFile
+} else {
+  explorer $OutputFile
+}
+  
+
+
