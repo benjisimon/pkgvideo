@@ -1,7 +1,7 @@
 ##
 ## Script to package up videos using ffmpeg
 ##
-param($Source, $Config)
+param($Source, $Config, $SkipFcsGeneration)
 
 Add-Type -AssemblyName PresentationCore,PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
@@ -32,7 +32,9 @@ $settings = Parse-IniFile -File $Config -Init $settings
 $settings['main'].video_width  = Find-Dimen -File $Source -What width
 $settings['main'].video_height = Find-Dimen -File $Source -What height
 
-Generate-FilterComplexScript -Settings $settings
+if(-not $SkipFcsGeneration) {
+  Generate-FilterComplexScript -Settings $settings
+}
 
 Package-Video -Source $Source -Settings $settings
 
