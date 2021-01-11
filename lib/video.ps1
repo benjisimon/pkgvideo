@@ -35,7 +35,7 @@ Function Generate-FilterComplexScript {
 [1:v]scale=w=$($S.main.image_w):h=$($S.main.image_h)[logo_a] ; 
 [2:v]scale=w=$($S.pre.image_w):h=$($S.pre.image_h)[logo_b] ; 
 [3:v]scale=w=$($S.post.image_w):h=$($S.post.image_h)[logo_c] ; 
-[0:v][logo_a] overlay=$($S.main.image_x):$($S.main.image_yd) [main] ; 
+[0:v][logo_a] overlay=$($S.main.image_x):$($S.main.image_y) [main] ; 
 [0:a] adelay=delays=$([int]$S.pre.duration * 1000):all=1  ; 
 [main]drawtext=fontfile='$FontDir/$($S.main.caption_font)': 
 	       text='$($S.main.caption_text)': 
