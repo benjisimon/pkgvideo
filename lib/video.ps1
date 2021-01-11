@@ -90,8 +90,8 @@ Function Package-Video {
     -f lavfi -i color=color=$($S.pre.bg_color):$($S.main.video_width)x$($S.main.video_height):d=$($S.pre.duration) `
     -f lavfi -i color=color=$($S.post.bg_color):$($S.main.video_width)x$($S.main.video_height):d=$($S.post.duration) `
     -i $($S.pre.audio) `
+    -codec:v libx264 -crf $($S.main.quality)  -preset medium `
     -filter_complex "$FilterExpr" `
-    -codec:v libx264  -preset medium `
     -vsync 2 `
     $OutputFile
 }
