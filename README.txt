@@ -11,7 +11,9 @@ This script relies on ffmpeg. You'll want to grab ffmpeg from:
 
 https://github.com/BtbN/FFmpeg-Builds/releases
 
-Download the file named ffmpeg-XXXXXXX-win64-gpl.zip.
+Download the file named ffmpeg-XXXXXXX-win64-gpl.zip. For example:
+
+https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2021-01-10-12-44/ffmpeg-N-100604-g2e2891383e-win64-gpl.zip
 
 Once you've downloaded and unzipped the file, move the bin directory
 into the same directory as this README.

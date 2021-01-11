@@ -8,55 +8,11 @@ Add-Type -AssemblyName System.Windows.Forms
 
 $Bin = "$PSScriptRoot\bin"
 
-function Prompt-File {
-  param($Title, $Filter)
-  
-  $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
-    InitialDirectory = [Environment]::GetFolderPath('MyDocuments')
-    Title = $Title
-    Filter = $Filter
-  }
-  $null = $FileBrowser.ShowDialog()
+. "lib\file.ps1"
+. "lib\video.ps1"
 
-  Return $FileBrowser.FileName
-}
-
-Function Parse-IniFile {
-  param($file,$init)
-  $ini = $init
-
-  # Create a default section if none exist in the file. Like a java prop file.
-  $section = "NO_SECTION"
-  if(-Not $ini.ContainsKey($section)) {
-    $ini[$section] = @{}
-  }
-
-
-  switch -regex -file $file {
-    "^\[(.+)\]$" {
-      $section = $matches[1].Trim()
-      if(-Not $ini.ContainsKey($section)) {
-	$ini[$section] = @{}
-      }
-    }
-    "^\s*([^#].+?)\s*=\s*(.*)" {
-      $name,$value = $matches[1..2]
-      # skip comments that start with semicolon:
-      if (!($name.StartsWith(";"))) {
-        $ini[$section][$name] = $value.Trim()
-      }
-    }
-  }
-  $ini
-}
-
-Function Find-Dimen {
-  param($file,$what);
-
-  Invoke-Expression "$Bin\ffprobe -show_streams $Source" 2> $null | Select-String -Pattern "^$what=" | ForEach-Object {
-    $_ -replace "$what=", ""
-  }
-}
+Require-File -File "$Bin\ffprobe.exe" -Message "ffmpeg not installed."
+Require-File -File "$Bin\ffmpeg.exe" -Message "ffmpeg not installed."
 
 if(-not $Source -Or (-not $(Test-Path $Source))) {
   $Source = Prompt-File -Title  "Choose Video" -Filter 'MP4 (*.mp4)|*.mp4|QuickTime (*.mov)|*.mov|AVI (*.avi)|*.avi'
@@ -66,15 +22,8 @@ if(-not $Config -Or (-not $(Test-Path $Config))) {
   $Config = Prompt-File -Title  "Choose Settings File" -Filter 'INI File (*.ini)|*.ini|Text File (*.txt)|*.txt'
 }
 
-if(-not $Config -Or (-not $(Test-Path $Config))) {
-  [System.Windows.MessageBox]::Show('No Configuration file provided. Giving Up.')
-  exit
-}
-
-if(-not $Source -Or (-not $(Test-Path $Source))) {
-  [System.Windows.MessageBox]::Show('No Source Video file provided. Giving Up.')
-  exit
-}
+Require-File -File $Config -Message  'No Configuration file provided. Giving Up.'
+Require-File -File $Source -Message  'No Video Source file provided. Giving Up.'
 
 $settings = @{}
 $settings = Parse-IniFile -File $PSScriptRoot\defaults.ini -Init $settings
