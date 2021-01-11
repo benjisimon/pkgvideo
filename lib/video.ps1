@@ -5,8 +5,16 @@
 Function Find-Dimen {
   param($file,$what);
 
-  Invoke-Expression "$Bin\ffprobe -show_streams $Source" 2> $null | Select-String -Pattern "^$what=" | ForEach-Object {
+  Invoke-Expression "$Bin\ffprobe -show_streams $File" 2> $null | Select-String -Pattern "^$what=" | ForEach-Object {
     $_ -replace "$what=", ""
+  }
+}
+
+Function Find-Duration {
+  param($file);
+
+  Invoke-Expression "$Bin\ffprobe -show_streams $File" 2> $null | Select-String -Pattern "^duration=" | ForEach-Object {
+    $_ -replace "^duration=", ""
   }
 }
 
@@ -36,7 +44,7 @@ Function Generate-FilterComplexScript {
 [2:v]scale=w=$($S.pre.image_w):h=$($S.pre.image_h)[logo_b] ; 
 [3:v]scale=w=$($S.post.image_w):h=$($S.post.image_h)[logo_c] ; 
 [0:v][logo_a] overlay=$($S.main.image_x):$($S.main.image_y) [main] ; 
-[0:a] adelay=delays=$([int]$S.pre.duration * 1000):all=1  ; 
+[6:a][0:a] concat=n=2:v=0:a=1;
 [main]drawtext=fontfile='$FontDir/$($S.main.caption_font)': 
 	       text='$($S.main.caption_text)': 
 	       x=$($S.main.caption_x): y=$($S.main.caption_y): 
@@ -70,7 +78,7 @@ Function Package-Video {
   param($Source, $Settings)
   $Bin = "$PSScriptRoot\..\bin"
   $FcsPath = Get-FcsPath
-  $FilterExpr = (Get-Content $FcsPath) -join ' '
+  $FilterExpr = (Get-Content $FcsPath)
   $S = $Settings
   $OutputFile = Get-OutputFile -File $Source
 
@@ -81,8 +89,10 @@ Function Package-Video {
     -i $($S.main.logo) `
     -f lavfi -i color=color=$($S.pre.bg_color):$($S.main.video_width)x$($S.main.video_height):d=$($S.pre.duration) `
     -f lavfi -i color=color=$($S.post.bg_color):$($S.main.video_width)x$($S.main.video_height):d=$($S.post.duration) `
+    -i $($S.pre.audio) `
     -filter_complex "$FilterExpr" `
     -codec:v libx264  -preset medium `
     -vsync 2 `
     $OutputFile
 }
+
