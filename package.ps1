@@ -30,6 +30,11 @@ $settings = Parse-IniFile -File $PSScriptRoot\defaults.ini -Init $settings
 $settings = Parse-IniFile -File $Config -Init $settings
 
 
+echo $Source
+echo $(Get-OutputFile $Source)
+exit
+
+
 $width = Find-Dimen -File $Source -What width
 $height = Find-Dimen -File $Source -What height
 

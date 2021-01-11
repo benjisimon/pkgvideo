@@ -9,3 +9,7 @@ Function Find-Dimen {
     $_ -replace "$what=", ""
   }
 }
+
+Function Get-OutputFile($File) {
+  return $(Get-Item $File).DirectoryName + "\" + $(Get-Item $File).Basename + "-Packaged.mp4"
+}
