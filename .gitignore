@@ -7,3 +7,4 @@ ffmpeg
 *.jpg
 fonts/*.txt
 bin
+.fcs.last

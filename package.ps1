@@ -29,14 +29,12 @@ $settings = @{}
 $settings = Parse-IniFile -File $PSScriptRoot\defaults.ini -Init $settings
 $settings = Parse-IniFile -File $Config -Init $settings
 
+$settings['main'].video_width  = Find-Dimen -File $Source -What width
+$settings['main'].video_height = Find-Dimen -File $Source -What height
 
-echo $Source
-echo $(Get-OutputFile $Source)
-exit
+Generate-FilterComplexScript -Settings $settings
 
+Package-Video -Source $Source -Settings $settings
 
-$width = Find-Dimen -File $Source -What width
-$height = Find-Dimen -File $Source -What height
-
-echo "$width x $height"
-
+$OutputFile = Get-OutputFile -File $Source
+& "$Bin\ffplay" $OutputFile
